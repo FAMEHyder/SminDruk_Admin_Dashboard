@@ -36,7 +36,7 @@ const ContactUs = () => {
           "service_bko45nn",
           "template_kuu4qem",
           {
-            to_name: "IYEF",
+            to_name: "SDMC",
             from_name: values.name,
             from_email: values.email,
             message: values.message,
