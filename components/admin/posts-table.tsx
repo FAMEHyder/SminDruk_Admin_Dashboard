@@ -101,6 +101,7 @@ export function PostsTable({ statusSlug }: { statusSlug?: string }) {
               <TableRow>
                 <TableHead>Content</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Source</TableHead>
                 <TableHead>Workspace</TableHead>
                 <TableHead>Author</TableHead>
                 <TableHead>Schedule / Publish</TableHead>
@@ -109,7 +110,7 @@ export function PostsTable({ statusSlug }: { statusSlug?: string }) {
             </TableHeader>
             <TableBody>
               {items.map((post) => (
-                <TableRow key={post._id}>
+                <TableRow key={`${post.source || "post"}-${post._id}`}>
                   <TableCell className="max-w-xs truncate">{post.content || "(empty)"}</TableCell>
                   <TableCell>
                     <Badge
@@ -123,6 +124,9 @@ export function PostsTable({ statusSlug }: { statusSlug?: string }) {
                     >
                       {post.status}
                     </Badge>
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground">
+                    {post.source === "bulk" ? "Bulk" : post.source === "page" ? "Page" : "Post"}
                   </TableCell>
                   <TableCell>{post.workspace?.name || "—"}</TableCell>
                   <TableCell>
@@ -158,7 +162,7 @@ export function PostsTable({ statusSlug }: { statusSlug?: string }) {
               ))}
               {!items.length && (
                 <TableRow>
-                  <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
+                  <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
                     No posts found.
                   </TableCell>
                 </TableRow>

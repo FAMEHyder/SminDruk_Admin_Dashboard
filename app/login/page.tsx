@@ -3,35 +3,42 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Field, FieldError } from "@/components/ui/field";
 import { useAuth } from "@/lib/auth-context";
+import { loginSchema, type LoginValues } from "@/lib/validations/auth";
 
 export default function LoginPage() {
   const { login, user, loading } = useAuth();
   const router = useRouter();
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [submitting, setSubmitting] = React.useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+    mode: "onBlur",
+  });
 
   React.useEffect(() => {
     if (!loading && user) router.replace("/dashboard");
   }, [loading, user, router]);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSubmitting(true);
+  async function onSubmit(values: LoginValues) {
     try {
-      await login(email, password);
+      await login(values.email, values.password);
       toast.success("Welcome back!");
       router.push("/dashboard");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Login failed");
-    } finally {
-      setSubmitting(false);
     }
   }
 
@@ -46,40 +53,42 @@ export default function LoginPage() {
           <CardDescription>Sign in with an admin or superadmin account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+            <Field>
               <label htmlFor="email" className="text-sm font-medium">
                 Email
               </label>
               <Input
                 id="email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@example.com"
-                required
+                autoComplete="email"
+                aria-invalid={!!errors.email}
+                {...register("email")}
               />
-            </div>
-            <div className="space-y-2">
+              <FieldError message={errors.email?.message} />
+            </Field>
+            <Field>
               <label htmlFor="password" className="text-sm font-medium">
                 Password
               </label>
               <Input
                 id="password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                autoComplete="current-password"
+                aria-invalid={!!errors.password}
+                {...register("password")}
               />
-            </div>
-            <Button type="submit" className="w-full" disabled={submitting}>
-              {submitting ? "Signing in..." : "Sign in"}
+              <FieldError message={errors.password?.message} />
+            </Field>
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Signing in..." : "Sign in"}
             </Button>
           </form>
           <p className="mt-4 text-center text-xs text-muted-foreground">
             User dashboard?{" "}
-            <Link href="http://localhost:3000/login" className="text-primary hover:underline">
-              Go to Zarshan app
+            <Link href="https://smindruk.vercel.app/login" className="text-primary hover:underline">
+              Go to Smindruk app
             </Link>
           </p>
         </CardContent>

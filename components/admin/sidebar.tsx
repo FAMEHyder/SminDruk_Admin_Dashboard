@@ -27,7 +27,7 @@ export function AdminSidebar({ className }: { className?: string }) {
       <div className="flex h-16 items-center gap-2 border-b px-4">
         <ShieldCheck className="size-6 text-sidebar-primary" />
         <div>
-          <p className="text-sm font-semibold">Zarshan Admin</p>
+          <p className="text-sm font-semibold">Smindruk Admin</p>
           <p className="text-xs text-muted-foreground">SaaS Control Center</p>
         </div>
       </div>

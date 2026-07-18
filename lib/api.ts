@@ -13,8 +13,8 @@ export function getApiBaseUrl(): string {
   return process.env.NODE_ENV === "production" ? API_BASE_URL_LIVE : API_BASE_URL_LOCAL;
 }
 
-const ACCESS_TOKEN_KEY = "zarshan_admin_access_token";
-const REFRESH_TOKEN_KEY = "zarshan_admin_refresh_token";
+const ACCESS_TOKEN_KEY = "smindruk_admin_access_token";
+const REFRESH_TOKEN_KEY = "smindruk_admin_refresh_token";
 
 export function getAccessToken(): string | null {
   if (typeof window === "undefined") return null;

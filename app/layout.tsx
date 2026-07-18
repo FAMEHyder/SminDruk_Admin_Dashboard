@@ -9,7 +9,7 @@ const geistSans = Geist({ variable: "--font-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: { default: "Zarshan Admin", template: "%s | Zarshan Admin" },
+  title: { default: "Smindruk Admin", template: "%s | Smindruk Admin" },
   description: "Social Media Management SaaS — Admin Control Center",
 };
 

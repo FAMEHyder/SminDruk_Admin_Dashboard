@@ -1,4 +1,4 @@
-# Zarshan Admin Dashboard
+# Smindruk Admin Dashboard
 
 Fully wired to the Backend admin APIs.
 

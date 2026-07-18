@@ -6,9 +6,11 @@ import { PageHeader } from "@/components/admin/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Field, FieldError } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { adminApi } from "@/lib/services";
 import type { PlatformSettings } from "@/types/admin";
+import { platformSettingsSchema } from "@/lib/validations/admin";
 
 export default function SettingsPage() {
   const [settings, setSettings] = React.useState<PlatformSettings | null>(null);
@@ -20,6 +22,7 @@ export default function SettingsPage() {
   );
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
 
   React.useEffect(() => {
     Promise.all([adminApi.getSettings(), adminApi.getSecurity(), adminApi.getSystem()])
@@ -35,9 +38,50 @@ export default function SettingsPage() {
   async function save(e: React.FormEvent) {
     e.preventDefault();
     if (!settings) return;
+
+    const parsed = platformSettingsSchema.safeParse({
+      websiteName: settings.websiteName,
+      defaultTimezone: settings.defaultTimezone,
+      contactEmail: settings.contactEmail,
+      supportEmail: settings.supportEmail,
+      logo: settings.logo ?? "",
+      favicon: settings.favicon ?? "",
+      announcementBanner: settings.announcementBanner ?? "",
+      maintenanceMode: settings.maintenanceMode,
+      maxWorkspacesPerUser: settings.globalLimits?.maxWorkspacesPerUser ?? 5,
+      maxScheduledPosts: settings.globalLimits?.maxScheduledPosts ?? 500,
+      storageLimitGB: settings.globalLimits?.storageLimitGB ?? 100,
+    });
+
+    if (!parsed.success) {
+      const next: Record<string, string> = {};
+      for (const issue of parsed.error.issues) {
+        const key = String(issue.path[0] ?? "websiteName");
+        if (!next[key]) next[key] = issue.message;
+      }
+      setErrors(next);
+      toast.error(parsed.error.issues[0]?.message || "Please fix the form errors");
+      return;
+    }
+    setErrors({});
+
     setSaving(true);
     try {
-      const updated = await adminApi.updateSettings(settings);
+      const updated = await adminApi.updateSettings({
+        websiteName: parsed.data.websiteName,
+        defaultTimezone: parsed.data.defaultTimezone,
+        contactEmail: parsed.data.contactEmail,
+        supportEmail: parsed.data.supportEmail,
+        logo: parsed.data.logo,
+        favicon: parsed.data.favicon,
+        announcementBanner: parsed.data.announcementBanner,
+        maintenanceMode: parsed.data.maintenanceMode,
+        globalLimits: {
+          maxWorkspacesPerUser: parsed.data.maxWorkspacesPerUser,
+          maxScheduledPosts: parsed.data.maxScheduledPosts,
+          storageLimitGB: parsed.data.storageLimitGB,
+        },
+      });
       setSettings(updated);
       toast.success("Settings saved");
     } catch (err) {
@@ -60,64 +104,78 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <PageHeader title="System Settings" description="Website branding, emails, and maintenance" />
 
-      <form onSubmit={save} className="space-y-6">
+      <form onSubmit={save} className="space-y-6" noValidate>
         <Card>
           <CardHeader>
             <CardTitle>Platform</CardTitle>
             <CardDescription>Public website identity and contact details</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 md:grid-cols-2">
-            <div className="space-y-1">
+            <Field>
               <label className="text-sm font-medium">Website Name</label>
               <Input
                 value={settings.websiteName}
                 onChange={(e) => setSettings({ ...settings, websiteName: e.target.value })}
+                aria-invalid={!!errors.websiteName}
               />
-            </div>
-            <div className="space-y-1">
+              <FieldError message={errors.websiteName} />
+            </Field>
+            <Field>
               <label className="text-sm font-medium">Default Timezone</label>
               <Input
                 value={settings.defaultTimezone}
                 onChange={(e) => setSettings({ ...settings, defaultTimezone: e.target.value })}
+                aria-invalid={!!errors.defaultTimezone}
               />
-            </div>
-            <div className="space-y-1">
+              <FieldError message={errors.defaultTimezone} />
+            </Field>
+            <Field>
               <label className="text-sm font-medium">Contact Email</label>
               <Input
                 type="email"
                 value={settings.contactEmail}
                 onChange={(e) => setSettings({ ...settings, contactEmail: e.target.value })}
+                aria-invalid={!!errors.contactEmail}
               />
-            </div>
-            <div className="space-y-1">
+              <FieldError message={errors.contactEmail} />
+            </Field>
+            <Field>
               <label className="text-sm font-medium">Support Email</label>
               <Input
                 type="email"
                 value={settings.supportEmail}
                 onChange={(e) => setSettings({ ...settings, supportEmail: e.target.value })}
+                aria-invalid={!!errors.supportEmail}
               />
-            </div>
-            <div className="space-y-1">
+              <FieldError message={errors.supportEmail} />
+            </Field>
+            <Field>
               <label className="text-sm font-medium">Logo URL</label>
               <Input
                 value={settings.logo}
                 onChange={(e) => setSettings({ ...settings, logo: e.target.value })}
+                aria-invalid={!!errors.logo}
               />
-            </div>
-            <div className="space-y-1">
+              <FieldError message={errors.logo} />
+            </Field>
+            <Field>
               <label className="text-sm font-medium">Favicon URL</label>
               <Input
                 value={settings.favicon}
                 onChange={(e) => setSettings({ ...settings, favicon: e.target.value })}
+                aria-invalid={!!errors.favicon}
               />
-            </div>
-            <div className="space-y-1 md:col-span-2">
+              <FieldError message={errors.favicon} />
+            </Field>
+            <Field className="md:col-span-2">
               <label className="text-sm font-medium">Announcement Banner</label>
               <Input
                 value={settings.announcementBanner}
                 onChange={(e) => setSettings({ ...settings, announcementBanner: e.target.value })}
+                aria-invalid={!!errors.announcementBanner}
               />
-            </div>
+              <FieldError message={errors.announcementBanner} />
+            </Field>
             <label className="flex items-center gap-2 text-sm md:col-span-2">
               <input
                 type="checkbox"
@@ -134,7 +192,7 @@ export default function SettingsPage() {
             <CardTitle>Global Limits</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3 md:grid-cols-3">
-            <div className="space-y-1">
+            <Field>
               <label className="text-sm font-medium">Max Workspaces / User</label>
               <Input
                 type="number"
@@ -148,9 +206,11 @@ export default function SettingsPage() {
                     },
                   })
                 }
+                aria-invalid={!!errors.maxWorkspacesPerUser}
               />
-            </div>
-            <div className="space-y-1">
+              <FieldError message={errors.maxWorkspacesPerUser} />
+            </Field>
+            <Field>
               <label className="text-sm font-medium">Max Scheduled Posts</label>
               <Input
                 type="number"
@@ -164,9 +224,11 @@ export default function SettingsPage() {
                     },
                   })
                 }
+                aria-invalid={!!errors.maxScheduledPosts}
               />
-            </div>
-            <div className="space-y-1">
+              <FieldError message={errors.maxScheduledPosts} />
+            </Field>
+            <Field>
               <label className="text-sm font-medium">Storage Limit (GB)</label>
               <Input
                 type="number"
@@ -180,8 +242,10 @@ export default function SettingsPage() {
                     },
                   })
                 }
+                aria-invalid={!!errors.storageLimitGB}
               />
-            </div>
+              <FieldError message={errors.storageLimitGB} />
+            </Field>
           </CardContent>
         </Card>
 

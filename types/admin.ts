@@ -102,6 +102,7 @@ export interface PostItem {
   workspace?: { _id: string; name: string };
   createdBy?: { _id: string; firstName: string; lastName: string; email: string };
   createdAt: string;
+  source?: "post" | "bulk" | "page";
 }
 
 export interface PaymentItem {

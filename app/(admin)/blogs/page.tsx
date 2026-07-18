@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/admin/page-header";
 import { PaginationBar } from "@/components/admin/pagination-bar";
@@ -8,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Field, FieldError } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -21,16 +24,24 @@ import { adminApi } from "@/lib/services";
 import type { BlogItem } from "@/types/admin";
 import type { PaginationMeta } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
+import { blogCreateSchema, type BlogCreateValues } from "@/lib/validations/admin";
 
 export default function BlogsPage() {
   const [items, setItems] = React.useState<BlogItem[]>([]);
   const [meta, setMeta] = React.useState<PaginationMeta | undefined>();
   const [page, setPage] = React.useState(1);
   const [loading, setLoading] = React.useState(true);
-  const [title, setTitle] = React.useState("");
-  const [excerpt, setExcerpt] = React.useState("");
-  const [content, setContent] = React.useState("");
-  const [creating, setCreating] = React.useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<BlogCreateValues>({
+    resolver: zodResolver(blogCreateSchema),
+    defaultValues: { title: "", excerpt: "", content: "" },
+    mode: "onBlur",
+  });
 
   const load = React.useCallback(async () => {
     setLoading(true);
@@ -49,20 +60,19 @@ export default function BlogsPage() {
     load();
   }, [load]);
 
-  async function handleCreate(e: React.FormEvent) {
-    e.preventDefault();
-    setCreating(true);
+  async function onCreate(values: BlogCreateValues) {
     try {
-      await adminApi.createBlog({ title, excerpt, content, category: "General" });
+      await adminApi.createBlog({
+        title: values.title,
+        excerpt: values.excerpt || "",
+        content: values.content,
+        category: "General",
+      });
       toast.success("Blog draft created");
-      setTitle("");
-      setExcerpt("");
-      setContent("");
+      reset();
       await load();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Create failed");
-    } finally {
-      setCreating(false);
     }
   }
 
@@ -75,27 +85,26 @@ export default function BlogsPage() {
           <CardTitle>Create Blog</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleCreate} className="grid gap-3 md:grid-cols-2">
-            <Input
-              placeholder="Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-            <Input
-              placeholder="Excerpt"
-              value={excerpt}
-              onChange={(e) => setExcerpt(e.target.value)}
-            />
-            <textarea
-              className="min-h-24 rounded-lg border border-input bg-transparent px-3 py-2 text-sm md:col-span-2 dark:bg-input/30"
-              placeholder="Content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              required
-            />
-            <Button type="submit" disabled={creating} className="md:col-span-2 w-fit">
-              {creating ? "Creating..." : "Create Draft"}
+          <form onSubmit={handleSubmit(onCreate)} className="grid gap-3 md:grid-cols-2" noValidate>
+            <Field>
+              <Input placeholder="Title" aria-invalid={!!errors.title} {...register("title")} />
+              <FieldError message={errors.title?.message} />
+            </Field>
+            <Field>
+              <Input placeholder="Excerpt" aria-invalid={!!errors.excerpt} {...register("excerpt")} />
+              <FieldError message={errors.excerpt?.message} />
+            </Field>
+            <Field className="md:col-span-2">
+              <textarea
+                className="min-h-24 w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm dark:bg-input/30 aria-invalid:border-destructive"
+                placeholder="Content"
+                aria-invalid={!!errors.content}
+                {...register("content")}
+              />
+              <FieldError message={errors.content?.message} />
+            </Field>
+            <Button type="submit" disabled={isSubmitting} className="md:col-span-2 w-fit">
+              {isSubmitting ? "Creating..." : "Create Draft"}
             </Button>
           </form>
         </CardContent>
@@ -120,68 +129,58 @@ export default function BlogsPage() {
                 <TableRow key={blog._id}>
                   <TableCell>
                     <p className="font-medium">{blog.title}</p>
-                    <p className="text-xs text-muted-foreground">{blog.slug}</p>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={blog.status === "published" ? "success" : "secondary"}>
-                      {blog.status}
-                    </Badge>
+                    <Badge variant="secondary">{blog.status}</Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
                     {blog.author
                       ? `${blog.author.firstName} ${blog.author.lastName}`
                       : "—"}
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{formatDate(blog.createdAt)}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-1">
-                      {blog.status !== "published" && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={async () => {
-                            try {
-                              await adminApi.publishBlog(blog._id);
-                              toast.success("Published");
-                              await load();
-                            } catch (err) {
-                              toast.error(err instanceof Error ? err.message : "Failed");
-                            }
-                          }}
-                        >
-                          Publish
-                        </Button>
-                      )}
+                  <TableCell className="text-sm text-muted-foreground">
+                    {formatDate(blog.createdAt)}
+                  </TableCell>
+                  <TableCell className="space-x-2">
+                    {blog.status !== "published" && (
                       <Button
                         size="sm"
-                        variant="destructive"
+                        variant="outline"
                         onClick={async () => {
-                          if (!confirm("Delete blog?")) return;
                           try {
-                            await adminApi.deleteBlog(blog._id);
-                            toast.success("Deleted");
+                            await adminApi.publishBlog(blog._id);
+                            toast.success("Published");
                             await load();
                           } catch (err) {
                             toast.error(err instanceof Error ? err.message : "Failed");
                           }
                         }}
                       >
-                        Delete
+                        Publish
                       </Button>
-                    </div>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={async () => {
+                        if (!confirm("Delete this blog?")) return;
+                        try {
+                          await adminApi.deleteBlog(blog._id);
+                          toast.success("Deleted");
+                          await load();
+                        } catch (err) {
+                          toast.error(err instanceof Error ? err.message : "Failed");
+                        }
+                      }}
+                    >
+                      Delete
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
-              {!items.length && (
-                <TableRow>
-                  <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
-                    No blogs yet.
-                  </TableCell>
-                </TableRow>
-              )}
             </TableBody>
           </Table>
-          <PaginationBar meta={meta} onPageChange={setPage} />
+          {meta && <PaginationBar meta={meta} onPageChange={setPage} />}
         </>
       )}
     </div>
