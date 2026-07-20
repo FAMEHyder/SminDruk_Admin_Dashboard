@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, LogOut, ShieldCheck } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 import { ADMIN_NAV } from "@/data/admin-nav";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
@@ -25,7 +25,8 @@ export function AdminSidebar({ className }: { className?: string }) {
   return (
     <aside className={cn("flex h-full flex-col border-r bg-sidebar text-sidebar-foreground", className)}>
       <div className="flex h-16 items-center gap-2 border-b px-4">
-        <ShieldCheck className="size-6 text-sidebar-primary" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="Smindruk" className="size-8 rounded-lg object-contain" />
         <div>
           <p className="text-sm font-semibold">Smindruk Admin</p>
           <p className="text-xs text-muted-foreground">SaaS Control Center</p>
