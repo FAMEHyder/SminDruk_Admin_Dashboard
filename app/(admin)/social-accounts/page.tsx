@@ -21,6 +21,13 @@ import { adminApi } from "@/lib/services";
 import type { SocialAccountItem, SocialAccountsOverview } from "@/types/admin";
 import { cn, formatDate, formatNumber } from "@/lib/utils";
 
+const PLATFORM_LABELS: Record<string, string> = {
+  facebook: "Facebook",
+  instagram: "Instagram",
+  linkedin: "LinkedIn",
+  x: "X",
+};
+
 function RefreshStatusBadge({ account }: { account: SocialAccountItem }) {
   if (account.refreshStatus === "healthy") {
     return <Badge variant="success">Healthy</Badge>;
@@ -132,6 +139,14 @@ export default function SocialAccountsPage() {
   const [search, setSearch] = React.useState("");
   const [debouncedSearch, setDebouncedSearch] = React.useState("");
   const [refreshingId, setRefreshingId] = React.useState<string | null>(null);
+  const manageAccountsByPlatform = React.useMemo(() => {
+    const groups = new Map<string, SocialAccountItem[]>();
+    for (const account of data?.manageAccounts || []) {
+      const platform = account.platform || "other";
+      groups.set(platform, [...(groups.get(platform) || []), account]);
+    }
+    return [...groups.entries()];
+  }, [data?.manageAccounts]);
 
   React.useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300);
@@ -306,12 +321,18 @@ export default function SocialAccountsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <AccountTable
-                accounts={data.manageAccounts}
-                type="manage"
-                onRefresh={handleRefresh}
-                refreshingId={refreshingId}
-              />
+              <div className="space-y-6">
+                {manageAccountsByPlatform.map(([platform, accounts]) => (
+                  <div key={platform}>
+                    <div className="mb-3 flex items-center gap-2">
+                      <Badge variant="outline">{PLATFORM_LABELS[platform] || platform}</Badge>
+                      <span className="text-sm text-muted-foreground">{accounts.length} connected</span>
+                    </div>
+                    <AccountTable accounts={accounts} type="manage" onRefresh={handleRefresh} refreshingId={refreshingId} />
+                  </div>
+                ))}
+                {!manageAccountsByPlatform.length && <AccountTable accounts={[]} type="manage" onRefresh={handleRefresh} refreshingId={refreshingId} />}
+              </div>
             </CardContent>
           </Card>
 
