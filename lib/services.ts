@@ -124,6 +124,18 @@ export const adminApi = {
   },
 
   syncSmmZioServices: () => api.post<{ imported: number }>("/admin/smm/providers/smmzio/sync-services"),
+  getSmmOverview: () =>
+    api.get<{
+      stats: {
+        categories: number;
+        activeServices: number;
+        totalOrders: number;
+        pendingOrders: number;
+        completedOrders: number;
+        totalSales: number;
+        walletLiability: number;
+      };
+    }>("/admin/smm/overview"),
   getSmmServices: async (params?: { page?: number; limit?: number; status?: string; search?: string }) => {
     const res = await api.getFull<SmmServiceItem[]>(`/admin/smm/services${qs(params)}`);
     return { items: res.data, meta: res.meta };

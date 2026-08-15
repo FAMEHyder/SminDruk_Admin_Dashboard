@@ -20,6 +20,19 @@ export function AdminHeader() {
   const [open, setOpen] = React.useState(false);
   const [results, setResults] = React.useState<SearchHit[]>([]);
   const [searching, setSearching] = React.useState(false);
+  const [growthMode, setGrowthMode] = React.useState(false);
+
+  React.useEffect(() => {
+    setGrowthMode(window.localStorage.getItem("smindruk_admin_mode") === "growth");
+  }, []);
+
+  function toggleAdminMode() {
+    const next = !growthMode;
+    setGrowthMode(next);
+    window.localStorage.setItem("smindruk_admin_mode", next ? "growth" : "management");
+    window.dispatchEvent(new Event("smindruk-admin-mode"));
+    router.push(next ? "/smm" : "/dashboard");
+  }
 
   React.useEffect(() => {
     const q = query.trim();
@@ -113,6 +126,9 @@ export function AdminHeader() {
       </div>
 
       <div className="flex items-center gap-2">
+        <Button variant="outline" size="sm" className="hidden lg:inline-flex" onClick={toggleAdminMode}>
+          {growthMode ? "Social Media Management" : "Growth Services"}
+        </Button>
         <Button variant="ghost" size="icon" aria-label="Notifications">
           <Bell className="size-4" />
         </Button>

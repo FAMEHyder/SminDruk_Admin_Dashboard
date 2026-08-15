@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, LogOut } from "lucide-react";
 import { ADMIN_NAV } from "@/data/admin-nav";
+import { GROWTH_ADMIN_NAV } from "@/data/admin-nav-growth";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
@@ -13,14 +14,23 @@ export function AdminSidebar({ className }: { className?: string }) {
   const pathname = usePathname();
   const { logout } = useAuth();
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>({});
+  const [growthMode, setGrowthMode] = React.useState(pathname.startsWith("/smm"));
+  const navItems = growthMode ? GROWTH_ADMIN_NAV : ADMIN_NAV;
 
   React.useEffect(() => {
-    ADMIN_NAV.forEach((item) => {
+    navItems.forEach((item) => {
       if (item.children?.some((c) => pathname.startsWith(c.href))) {
         setOpenGroups((prev) => ({ ...prev, [item.title]: true }));
       }
     });
-  }, [pathname]);
+  }, [pathname, navItems]);
+
+  React.useEffect(() => {
+    const syncMode = () => setGrowthMode(window.localStorage.getItem("smindruk_admin_mode") === "growth");
+    syncMode();
+    window.addEventListener("smindruk-admin-mode", syncMode);
+    return () => window.removeEventListener("smindruk-admin-mode", syncMode);
+  }, []);
 
   return (
     <aside className={cn("flex h-full flex-col border-r bg-sidebar text-sidebar-foreground", className)}>
@@ -34,7 +44,7 @@ export function AdminSidebar({ className }: { className?: string }) {
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-        {ADMIN_NAV.map((item) => {
+        {navItems.map((item) => {
           const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const hasChildren = Boolean(item.children?.length);
           const groupOpen = openGroups[item.title];
