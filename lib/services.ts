@@ -11,6 +11,7 @@ import type {
   PlatformSettings,
   PostItem,
   SocialAccountsOverview,
+  SmmServiceItem,
   SubscriptionItem,
   SupportTicket,
   WorkspaceItem,
@@ -121,6 +122,14 @@ export const adminApi = {
     }>(`/admin/payments${qs(params)}`);
     return { ...res.data, meta: res.meta };
   },
+
+  syncSmmZioServices: () => api.post<{ imported: number }>("/admin/smm/providers/smmzio/sync-services"),
+  getSmmServices: async (params?: { page?: number; limit?: number; status?: string; search?: string }) => {
+    const res = await api.getFull<SmmServiceItem[]>(`/admin/smm/services${qs(params)}`);
+    return { items: res.data, meta: res.meta };
+  },
+  updateSmmService: (id: string, data: Partial<SmmServiceItem>) =>
+    api.patch<SmmServiceItem>(`/admin/smm/services/${id}`, data),
 
   getAi: () =>
     api.get<{

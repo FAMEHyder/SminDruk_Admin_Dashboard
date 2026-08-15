@@ -117,6 +117,21 @@ export interface PaymentItem {
   createdAt: string;
 }
 
+export interface SmmServiceItem {
+  _id: string;
+  name: string;
+  platform: string;
+  description?: string;
+  minQuantity: number;
+  maxQuantity: number;
+  ratePerThousand: number;
+  currency: string;
+  providerName?: string;
+  providerServiceId?: string;
+  isActive: boolean;
+  category?: { _id: string; name: string };
+}
+
 export interface SubscriptionItem {
   _id: string;
   plan: string;

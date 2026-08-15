@@ -13,6 +13,7 @@ import {
   MessageSquare,
   ScrollText,
   Settings,
+  Store,
   Shield,
   Timer,
   Users,
@@ -57,6 +58,14 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { title: "Analytics", href: "/analytics", icon: BarChart3 },
   { title: "Subscriptions", href: "/subscriptions", icon: Wallet },
   { title: "Payments", href: "/payments", icon: CreditCard },
+  {
+    title: "Growth Services",
+    href: "/smm/services",
+    icon: Store,
+    children: [
+      { title: "Services", href: "/smm/services" },
+    ],
+  },
   { title: "AI Management", href: "/ai", icon: Brain },
   { title: "Media Library", href: "/media", icon: Image },
   { title: "Notifications", href: "/notifications", icon: Bell },
