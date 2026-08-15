@@ -137,7 +137,7 @@ export const adminApi = {
         walletLiability: number;
       };
     }>("/admin/smm/overview"),
-  getSmmServices: async (params?: { page?: number; limit?: number; status?: string; search?: string }) => {
+  getSmmServices: async (params?: { page?: number; limit?: number; status?: string; search?: string; provider?: string }) => {
     const res = await api.getFull<SmmServiceItem[]>(`/admin/smm/services${qs(params)}`);
     return { items: res.data, meta: res.meta };
   },
