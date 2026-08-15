@@ -124,6 +124,7 @@ export const adminApi = {
   },
 
   syncSmmZioServices: () => api.post<{ imported: number }>("/admin/smm/providers/smmzio/sync-services"),
+  syncPakServices: () => api.post<{ imported: number }>("/admin/smm/providers/paksmmcheap/sync-services"),
   getSmmOverview: () =>
     api.get<{
       stats: {

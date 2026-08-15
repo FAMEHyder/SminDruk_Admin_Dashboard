@@ -33,11 +33,11 @@ export default function SmmServicesAdminPage() {
 
   useEffect(() => { void load(); }, [load]);
 
-  async function syncSmmZio() {
+  async function syncProvider(provider: "smmzio" | "pak") {
     setSyncing(true);
     try {
-      const result = await adminApi.syncSmmZioServices();
-      toast.success(`${result.imported} SMMZIO services imported as drafts.`);
+      const result = provider === "smmzio" ? await adminApi.syncSmmZioServices() : await adminApi.syncPakServices();
+      toast.success(`${result.imported} ${provider === "smmzio" ? "SMMZIO" : "Pak"} services imported as drafts.`);
       await load();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "SMMZIO sync failed.");
@@ -57,7 +57,7 @@ export default function SmmServicesAdminPage() {
   }
 
   return <div className="space-y-6">
-    <PageHeader title="Growth Services" description="Import SMMZIO packages, review their details, and enable only the services customers should see." actions={<Button onClick={syncSmmZio} disabled={syncing}><RefreshCw className={`mr-2 size-4 ${syncing ? "animate-spin" : ""}`} />{syncing ? "Syncing…" : "Sync SMMZIO services"}</Button>} />
+    <PageHeader title="Growth Services" description="Import provider packages, review their details, and enable only the services customers should see." actions={<div className="flex gap-2"><Button variant="outline" onClick={() => void syncProvider("pak")} disabled={syncing}><RefreshCw className={`mr-2 size-4 ${syncing ? "animate-spin" : ""}`} />Sync Pak Services</Button><Button onClick={() => void syncProvider("smmzio")} disabled={syncing}><RefreshCw className={`mr-2 size-4 ${syncing ? "animate-spin" : ""}`} />Sync ZIO Services</Button></div>} />
     <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200">Imported services are hidden by default. Verify each package’s price, limits, and platform before enabling it for customers.</div>
     {loading ? <div className="space-y-3">{[1, 2, 3, 4].map((key) => <Skeleton key={key} className="h-14 w-full" />)}</div> : <div className="overflow-x-auto rounded-xl border"><Table><TableHeader><TableRow><TableHead>Service</TableHead><TableHead>Platform</TableHead><TableHead>Price / 1k</TableHead><TableHead>Limits</TableHead><TableHead>Provider</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Visible</TableHead></TableRow></TableHeader><TableBody>{services.map((service) => <TableRow key={service._id}><TableCell><p className="font-medium">{service.name}</p><p className="text-xs text-muted-foreground">{service.category?.name || "Other"}</p></TableCell><TableCell className="capitalize">{service.platform}</TableCell><TableCell>{money(service.ratePerThousand, service.currency)}</TableCell><TableCell>{service.minQuantity.toLocaleString()}–{service.maxQuantity.toLocaleString()}</TableCell><TableCell>{service.providerName || "Manual"}</TableCell><TableCell><Badge variant={service.isActive ? "default" : "secondary"}>{service.isActive ? "Active" : "Draft"}</Badge></TableCell><TableCell className="text-right"><Button size="sm" variant={service.isActive ? "outline" : "default"} onClick={() => void toggleService(service)}>{service.isActive ? "Hide" : "Enable"}</Button></TableCell></TableRow>)}{!services.length ? <TableRow><TableCell colSpan={7} className="py-10 text-center text-muted-foreground">No Growth Services imported yet. Use the SMMZIO sync button above.</TableCell></TableRow> : null}</TableBody></Table></div>}
   </div>;
