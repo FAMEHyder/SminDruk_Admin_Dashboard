@@ -11,6 +11,11 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 export const metadata: Metadata = {
   title: { default: "Smindruk Admin", template: "%s | Smindruk Admin" },
   description: "Social Media Management SaaS — Admin Control Center",
+  icons: {
+    icon: "https://smindruk.vercel.app/logo.png",
+    shortcut: "https://smindruk.vercel.app/logo.png",
+    apple: "https://smindruk.vercel.app/logo.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

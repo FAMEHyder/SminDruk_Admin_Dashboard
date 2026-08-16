@@ -36,7 +36,7 @@ export function AdminSidebar({ className }: { className?: string }) {
     <aside className={cn("flex h-full flex-col border-r bg-sidebar text-sidebar-foreground", className)}>
       <div className="flex h-16 items-center gap-2 border-b px-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="Smindruk" className="size-8 rounded-lg object-contain" />
+        <img src="https://smindruk.vercel.app/logo.png" alt="Smindruk" className="size-8 rounded-lg object-contain" />
         <div>
           <p className="text-sm font-semibold">Smindruk Admin</p>
           <p className="text-xs text-muted-foreground">SaaS Control Center</p>
