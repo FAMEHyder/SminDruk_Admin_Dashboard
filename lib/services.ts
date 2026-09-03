@@ -138,7 +138,7 @@ export const adminApi = {
       };
     }>("/admin/smm/overview"),
   getSmmProviderBalances: () =>
-    api.get<{ id: string; name: string; available: number; currency: string; connected: boolean }[]>(
+    api.get<{ id: string; name: string; available: number; currency: string; connected: boolean; lowBalance: boolean; lowBalanceThreshold: number }[]>(
       "/admin/smm/providers/balances"
     ),
   getSmmServices: async (params?: { page?: number; limit?: number; status?: string; search?: string; provider?: string }) => {
