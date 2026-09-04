@@ -113,6 +113,8 @@ export interface PaymentItem {
   gateway: string;
   plan?: string;
   receiptUrl?: string;
+  paymentMethod?: string;
+  paymentReference?: string;
   workspace?: { _id: string; name: string };
   createdAt: string;
 }

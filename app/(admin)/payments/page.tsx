@@ -29,6 +29,7 @@ export default function PaymentsPage() {
   const [status, setStatus] = React.useState<string>("");
   const [page, setPage] = React.useState(1);
   const [loading, setLoading] = React.useState(true);
+  const [reviewingId, setReviewingId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     setLoading(true);
@@ -42,6 +43,21 @@ export default function PaymentsPage() {
       .catch((err) => toast.error(err.message))
       .finally(() => setLoading(false));
   }, [page, status]);
+
+  async function reviewPayment(id: string, decision: "approve" | "reject") {
+    setReviewingId(id);
+    try {
+      await adminApi.reviewManualPayment(id, decision);
+      setItems((current) =>
+        current.map((payment) => (payment._id === id ? { ...payment, status: decision === "approve" ? "succeeded" : "failed" } : payment))
+      );
+      toast.success(decision === "approve" ? "Payment approved; subscription activated." : "Payment rejected.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not review payment.");
+    } finally {
+      setReviewingId(null);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -92,6 +108,7 @@ export default function PaymentsPage() {
                 <TableHead>Plan</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Date</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -117,11 +134,30 @@ export default function PaymentsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">{formatDate(p.createdAt)}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-2">
+                      {p.receiptUrl && (
+                        <Button size="sm" variant="outline" asChild>
+                          <a href={p.receiptUrl} target="_blank" rel="noreferrer">View proof</a>
+                        </Button>
+                      )}
+                      {p.gateway === "manual" && p.status === "pending" && (
+                        <>
+                          <Button size="sm" disabled={reviewingId === p._id} onClick={() => reviewPayment(p._id, "approve")}>
+                            Approve
+                          </Button>
+                          <Button size="sm" variant="destructive" disabled={reviewingId === p._id} onClick={() => reviewPayment(p._id, "reject")}>
+                            Reject
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
               {!items.length && (
                 <TableRow>
-                  <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
+                  <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
                     No payments found.
                   </TableCell>
                 </TableRow>

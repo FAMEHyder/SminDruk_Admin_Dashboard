@@ -122,6 +122,8 @@ export const adminApi = {
     }>(`/admin/payments${qs(params)}`);
     return { ...res.data, meta: res.meta };
   },
+  reviewManualPayment: (id: string, decision: "approve" | "reject", reviewNote?: string) =>
+    api.patch<PaymentItem>(`/admin/payments/${id}/review`, { decision, reviewNote }),
 
   syncSmmZioServices: () => api.post<{ imported: number }>("/admin/smm/providers/smmzio/sync-services"),
   syncPakServices: () => api.post<{ imported: number }>("/admin/smm/providers/paksmmcheap/sync-services"),
