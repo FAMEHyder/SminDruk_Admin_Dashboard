@@ -15,7 +15,9 @@ interface AuthContextValue {
 
 const AuthContext = React.createContext<AuthContextValue | undefined>(undefined);
 
-const ADMIN_ROLES = new Set(["admin", "superadmin"]);
+// "superadmin" is the canonical role. Keep compatibility with old MongoDB
+// records that were manually saved as "super admin".
+const ADMIN_ROLES = new Set(["admin", "superadmin", "super admin"]);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<AdminUser | null>(null);
