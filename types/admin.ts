@@ -119,6 +119,24 @@ export interface PaymentItem {
   createdAt: string;
 }
 
+export interface SmmOrderApprovalItem {
+  _id: string;
+  publicOrderId: string;
+  link: string;
+  quantity: number;
+  charge: number;
+  currency: string;
+  status: string;
+  paymentStatus: string;
+  paymentMethod?: string;
+  paymentProofUrl?: string;
+  paymentReference?: string;
+  service?: { name: string; platform: string };
+  workspace?: { name: string };
+  createdBy?: { firstName: string; lastName: string; email: string };
+  createdAt: string;
+}
+
 export interface SmmServiceItem {
   _id: string;
   name: string;

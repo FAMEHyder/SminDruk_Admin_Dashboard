@@ -12,6 +12,7 @@ import type {
   PostItem,
   SocialAccountsOverview,
   SmmServiceItem,
+  SmmOrderApprovalItem,
   SubscriptionItem,
   SupportTicket,
   WorkspaceItem,
@@ -124,6 +125,12 @@ export const adminApi = {
   },
   reviewManualPayment: (id: string, decision: "approve" | "reject", reviewNote?: string) =>
     api.patch<PaymentItem>(`/admin/payments/${id}/review`, { decision, reviewNote }),
+  getSmmOrders: async (params?: { page?: number; status?: string }) => {
+    const res = await api.getFull<SmmOrderApprovalItem[]>(`/admin/smm/orders${qs(params)}`);
+    return { items: res.data, meta: res.meta as PaginationMeta | undefined };
+  },
+  reviewSmmOrderPayment: (id: string, decision: "approve" | "reject", reviewNote?: string) =>
+    api.patch<SmmOrderApprovalItem>(`/admin/smm/orders/${id}/payment-review`, { decision, reviewNote }),
 
   syncSmmZioServices: () => api.post<{ imported: number }>("/admin/smm/providers/smmzio/sync-services"),
   syncPakServices: () => api.post<{ imported: number }>("/admin/smm/providers/paksmmcheap/sync-services"),
