@@ -188,7 +188,7 @@ export default function SocialAccountsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Social Accounts</h1>
           <p className="text-sm text-muted-foreground">
-            Manage Account vs Dataset Account — token refresh at 45 days
+            Manage vs Dataset accounts — cron refreshes tokens from day 7 so posts keep working until day 60
           </p>
         </div>
         <div className="relative w-full max-w-sm">
