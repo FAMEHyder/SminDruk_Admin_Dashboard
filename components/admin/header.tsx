@@ -140,13 +140,17 @@ export function AdminHeader() {
         >
           {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
         </Button>
-        <div className="hidden items-center gap-2 rounded-lg border px-3 py-1.5 sm:flex">
+        <button
+          type="button"
+          className="hidden items-center gap-2 rounded-lg border px-3 py-1.5 sm:flex hover:bg-muted/60"
+          onClick={() => router.push("/account")}
+        >
           <UserCircle2 className="size-5 text-muted-foreground" />
           <div className="text-left text-sm leading-tight">
             <p className="font-medium">{user ? `${user.firstName} ${user.lastName}` : "Admin"}</p>
-            <p className="text-xs text-muted-foreground capitalize">{user?.role || "admin"}</p>
+            <p className="text-xs text-muted-foreground">Change password</p>
           </div>
-        </div>
+        </button>
       </div>
     </header>
   );

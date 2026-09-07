@@ -11,6 +11,12 @@ export const optionalUrlSchema = z
   .trim()
   .refine((v) => !v || /^https?:\/\/.+/i.test(v), "Enter a valid URL (https://...)");
 
+export const passwordSchema = z
+  .string()
+  .min(1, "Password is required")
+  .min(8, "Password must be at least 8 characters")
+  .max(128, "Password is too long");
+
 export const positiveIntSchema = (label: string) =>
   z.coerce
     .number({ error: `${label} must be a number` })

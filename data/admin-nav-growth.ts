@@ -1,9 +1,10 @@
 import type { AdminNavItem } from "./admin-nav";
-import { LayoutDashboard, ListOrdered, Store } from "lucide-react";
+import { KeyRound, LayoutDashboard, ListOrdered, Store } from "lucide-react";
 
 export const GROWTH_ADMIN_NAV: AdminNavItem[] = [
   { title: "Growth Overview", href: "/smm", icon: LayoutDashboard },
   { title: "ZIO Services", href: "/smm/services?provider=smmzio", icon: Store },
   { title: "Pak Services", href: "/smm/services?provider=paksmmcheap", icon: Store },
   { title: "Payment Approvals", href: "/smm/orders", icon: ListOrdered },
+  { title: "Account", href: "/account", icon: KeyRound },
 ];

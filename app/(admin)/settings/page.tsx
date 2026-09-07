@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { adminApi } from "@/lib/services";
 import type { PlatformSettings } from "@/types/admin";
 import { platformSettingsSchema } from "@/lib/validations/admin";
+import { ChangePasswordForm } from "@/components/admin/change-password-form";
 
 export default function SettingsPage() {
   const [settings, setSettings] = React.useState<PlatformSettings | null>(null);
@@ -253,6 +254,16 @@ export default function SettingsPage() {
           {saving ? "Saving..." : "Save Settings"}
         </Button>
       </form>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Change password</CardTitle>
+          <CardDescription>Super admin can set a new password directly. Other admins must enter the current password first.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ChangePasswordForm />
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>

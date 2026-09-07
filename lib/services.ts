@@ -37,6 +37,8 @@ export const authApi = {
   me: () => api.get<AdminUser>("/users/me"),
   logout: (refreshToken?: string) =>
     api.post("/auth/logout", refreshToken ? { refreshToken } : undefined),
+  changePassword: (data: { currentPassword?: string; newPassword: string }) =>
+    api.patch("/users/me/password", data),
 };
 
 export const adminApi = {

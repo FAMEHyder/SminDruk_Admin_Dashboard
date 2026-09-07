@@ -8,6 +8,7 @@ import {
   FileText,
   FolderKanban,
   Image,
+  KeyRound,
   LayoutDashboard,
   Link2,
   MessageSquare,
@@ -65,5 +66,6 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { title: "Reports", href: "/reports", icon: ScrollText },
   { title: "Audit Logs", href: "/audit-logs", icon: Shield },
   { title: "API Settings", href: "/api-settings", icon: Wrench },
+  { title: "Account", href: "/account", icon: KeyRound },
   { title: "System Settings", href: "/settings", icon: Settings },
 ];
