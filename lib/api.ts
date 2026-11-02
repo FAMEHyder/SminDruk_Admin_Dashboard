@@ -2,7 +2,7 @@ const API_BASE_URL_LOCAL =
   process.env.NEXT_PUBLIC_API_URL_LOCAL || "http://localhost:8000/api/v1";
 
 const API_BASE_URL_LIVE =
-  process.env.NEXT_PUBLIC_API_URL_LIVE || "https://smindruk.up.railway.app/api/v1";
+  process.env.NEXT_PUBLIC_API_URL_LIVE || "https://smindruk-backend.onrender.com/api/v1";
 
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1"]);
 

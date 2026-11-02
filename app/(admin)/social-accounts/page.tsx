@@ -24,6 +24,7 @@ import { cn, formatDate, formatNumber } from "@/lib/utils";
 const PLATFORM_LABELS: Record<string, string> = {
   facebook: "Facebook",
   instagram: "Instagram",
+  threads: "Threads",
   linkedin: "LinkedIn",
   x: "X",
 };
