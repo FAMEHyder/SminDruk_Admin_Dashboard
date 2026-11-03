@@ -31,27 +31,30 @@ export default function PaymentsPage() {
   const [loading, setLoading] = React.useState(true);
   const [reviewingId, setReviewingId] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
+  const loadPayments = React.useCallback(async () => {
     setLoading(true);
-    adminApi
-      .getPayments({ page, status: status || undefined })
-      .then((res) => {
-        setItems(res.items);
-        setSummary(res.summary || {});
-        setMeta(res.meta);
-      })
-      .catch((err) => toast.error(err.message))
-      .finally(() => setLoading(false));
+    try {
+      const res = await adminApi.getPayments({ page, status: status || undefined });
+      setItems(res.items);
+      setSummary(res.summary || {});
+      setMeta(res.meta);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not load payments.");
+    } finally {
+      setLoading(false);
+    }
   }, [page, status]);
+
+  React.useEffect(() => {
+    loadPayments();
+  }, [loadPayments]);
 
   async function reviewPayment(id: string, decision: "approve" | "reject") {
     setReviewingId(id);
     try {
       await adminApi.reviewManualPayment(id, decision);
-      setItems((current) =>
-        current.map((payment) => (payment._id === id ? { ...payment, status: decision === "approve" ? "succeeded" : "failed" } : payment))
-      );
       toast.success(decision === "approve" ? "Payment approved; subscription activated." : "Payment rejected.");
+      await loadPayments();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not review payment.");
     } finally {
@@ -118,7 +121,19 @@ export default function PaymentsPage() {
                   <TableCell className="font-medium">
                     {formatCurrency(p.amount)} {p.currency}
                   </TableCell>
-                  <TableCell className="capitalize">{p.gateway}</TableCell>
+                  <TableCell>
+                    <span className="capitalize">{p.gateway}</span>
+                    {p.paymentMethod ? (
+                      <span className="block text-xs text-muted-foreground capitalize">
+                        via {p.paymentMethod}
+                      </span>
+                    ) : null}
+                    {p.paymentReference ? (
+                      <span className="block text-xs text-muted-foreground">
+                        Ref: {p.paymentReference}
+                      </span>
+                    ) : null}
+                  </TableCell>
                   <TableCell className="capitalize">{p.plan || "—"}</TableCell>
                   <TableCell>
                     <Badge

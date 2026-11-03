@@ -28,6 +28,8 @@ const EVENTS = [
   "cron_job_run",
   "payment_processed",
   "subscription_changed",
+  "manual_payment_approved",
+  "manual_payment_rejected",
   "error",
 ];
 
