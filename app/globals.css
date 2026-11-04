@@ -126,3 +126,10 @@
     @apply font-sans;
   }
 }
+
+
+/* Toast close button */
+[data-sonner-toast] [data-close-button] {
+  opacity: 1 !important;
+  cursor: pointer;
+}
