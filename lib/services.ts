@@ -76,6 +76,8 @@ export const adminApi = {
     const res = await api.getFull<PostItem[]>(`/admin/posts${qs(params)}`);
     return { items: res.data, meta: res.meta };
   },
+  reviewPost: (id: string, data: { decision: "approve" | "reject"; rejectionReason?: string }) =>
+    api.patch<PostItem>(`/admin/posts/${id}/review`, data),
   deletePost: (id: string) => api.delete(`/admin/posts/${id}`),
 
   getSocialAccounts: (params?: { search?: string; status?: string }) =>

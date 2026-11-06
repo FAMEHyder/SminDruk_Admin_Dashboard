@@ -99,6 +99,13 @@ export interface PostItem {
   scheduledAt?: string;
   publishedAt?: string;
   failureReason?: string;
+  rejectionReason?: string;
+  secretKey?: string;
+  fromPage?: number;
+  toPage?: number;
+  category?: string;
+  isImmediate?: boolean;
+  media?: Array<{ _id: string; url: string; fileType?: string; mimeType?: string }>;
   workspace?: { _id: string; name: string };
   createdBy?: { _id: string; firstName: string; lastName: string; email: string };
   createdAt: string;

@@ -47,10 +47,12 @@ export const ADMIN_NAV: AdminNavItem[] = [
     icon: FileText,
     children: [
       { title: "All Posts", href: "/posts" },
+      { title: "Pending Approval", href: "/posts/pending-approval" },
       { title: "Published", href: "/posts/published" },
       { title: "Scheduled", href: "/posts/scheduled" },
       { title: "Drafts", href: "/posts/drafts" },
       { title: "Failed", href: "/posts/failed" },
+      { title: "Rejected", href: "/posts/rejected" },
     ],
   },
   { title: "Social Accounts", href: "/social-accounts", icon: Link2 },
