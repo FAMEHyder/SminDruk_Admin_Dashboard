@@ -115,7 +115,7 @@ export function PostsTable({ statusSlug }: { statusSlug?: string }) {
     if (!rejectingPost) return;
     const reason = rejectionReason.trim();
     if (!reason) {
-      toast.error("Please enter a rejection reason (Wajah).");
+      toast.error("Please enter a rejection reason.");
       return;
     }
     setProcessingId(rejectingPost._id);
@@ -231,7 +231,7 @@ export function PostsTable({ statusSlug }: { statusSlug?: string }) {
                       </Badge>
                       {isRejected && post.rejectionReason && (
                         <p className="mt-1 text-xs text-destructive max-w-xs line-clamp-2">
-                          Wajah: {post.rejectionReason}
+                          Reason: {post.rejectionReason}
                         </p>
                       )}
                     </TableCell>
@@ -383,7 +383,7 @@ export function PostsTable({ statusSlug }: { statusSlug?: string }) {
 
               {viewPost.status === "rejected" && viewPost.rejectionReason && (
                 <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 space-y-1">
-                  <p className="text-xs font-bold text-destructive">Rejection Reason (Wajah):</p>
+                  <p className="text-xs font-bold text-destructive">Rejection Reason:</p>
                   <p className="text-sm text-foreground">{viewPost.rejectionReason}</p>
                 </div>
               )}
@@ -478,7 +478,7 @@ export function PostsTable({ statusSlug }: { statusSlug?: string }) {
         </div>
       )}
 
-      {/* Rejection Modal with Reason (Wajah) */}
+      {/* Rejection Modal with Reason */}
       {rejectingPost && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
           <div className="w-full max-w-md rounded-2xl border border-destructive/30 bg-card p-6 shadow-2xl space-y-4">
@@ -506,7 +506,7 @@ export function PostsTable({ statusSlug }: { statusSlug?: string }) {
 
             <div className="space-y-1.5">
               <label htmlFor="rejection-reason" className="text-xs font-semibold text-foreground">
-                Rejection Reason (Wajah) <span className="text-destructive">*</span>
+                Rejection Reason <span className="text-destructive">*</span>
               </label>
               <textarea
                 id="rejection-reason"
