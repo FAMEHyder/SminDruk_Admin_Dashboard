@@ -240,9 +240,14 @@ export function PostsTable({ statusSlug }: { statusSlug?: string }) {
                         <span className="font-semibold text-foreground">
                           {post.source === "bulk" ? "Bulk Post" : post.source === "page" ? "Page" : "Single Post"}
                         </span>
-                        {post.fromPage && post.toPage && (
+                        {post.pageNumbers && post.pageNumbers.length > 0 ? (
+                          <p title={post.pageNumbers.map((n) => `#${n}`).join(", ")}>
+                            Pages ({post.pageNumbers.length}): {post.pageNumbers.slice(0, 4).map((n) => `#${n}`).join(", ")}
+                            {post.pageNumbers.length > 4 ? "..." : ""}
+                          </p>
+                        ) : post.fromPage && post.toPage ? (
                           <p>Pages #{post.fromPage} – #{post.toPage}</p>
-                        )}
+                        ) : null}
                         {post.category && (
                           <p>Cat: {post.category}</p>
                         )}

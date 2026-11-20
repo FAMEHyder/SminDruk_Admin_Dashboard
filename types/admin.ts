@@ -103,6 +103,7 @@ export interface PostItem {
   secretKey?: string;
   fromPage?: number;
   toPage?: number;
+  pageNumbers?: number[];
   category?: string;
   isImmediate?: boolean;
   media?: Array<{ _id: string; url: string; fileType?: string; mimeType?: string }>;
